@@ -1,0 +1,13 @@
+// import moment from 'moment';
+
+// // Define your times
+// const time1 = moment("09:00:00", "hh:mm:ss");
+// const time2 = moment("00:03:15", "hh:mm:ss");
+
+// // Subtract time2 from time1
+// const subtractedTime = time1.subtract(time2);
+
+// // Format the result as 'hh:mm:ss'
+// const formattedResult = moment(subtractedTime).format("hh:mm:ss");
+
+// console.log(formattedResult); // Output: 08:56:45

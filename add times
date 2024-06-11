@@ -1,0 +1,39 @@
+// import React from 'react';
+// import moment from 'moment';
+
+// const EmployeeActivities = ({ activities }) => {
+//   const totalDuration = activities.reduce((total, activity) => {
+//     const startMoment = moment(activity.start);
+//     const endMoment = moment(activity.end);
+//     const duration = moment.duration(endMoment.diff(startMoment));
+//     return total.add(duration);
+//   }, moment.duration(0));
+
+//   // Extract individual components (days, hours, minutes, seconds)
+//   const days = totalDuration.days();
+//   const hours = totalDuration.hours();
+//   const minutes = totalDuration.minutes();
+//   const seconds = totalDuration.seconds();
+
+//   return (
+//     <div>
+//       <p>Total Duration:</p>
+//       <p>{days} days, {hours} hours, {minutes} minutes, {seconds} seconds</p>
+//     </div>
+//   );
+// };
+
+// // Example usage:
+// const activities = [
+//   { start: '2024-06-01T09:00:00', end: '2024-06-01T17:30:00' },
+//   // Add more activities here...
+// ];
+
+// const App = () => (
+//   <div>
+//     <h1>Employee Activities</h1>
+//     <EmployeeActivities activities={activities} />
+//   </div>
+// );
+
+// export default App;
