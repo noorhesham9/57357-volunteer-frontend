@@ -54,7 +54,7 @@ function AddTimes({ token }) {
                 <Field name="volunteer" id="volunteer" type="text" />
               </TextField> */}
 
-              <ChooseTheVlunteer token={token} />
+              <ChooseTheVlunteer formik={formik} token={token} />
               <Button type="submit">Submit</Button>
             </Form>
           );
