@@ -7,6 +7,8 @@ import Login from "./components/Login";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import AddTimes from "./components/AddTimes";
+import ViewAdminHours from "./components/ViewAdminHours";
+import ViewVolunteerDetail from "./components/ViewVolunteerDetail";
 function App() {
   const navigate = useNavigate();
   const [tokenn, setToken] = useState(null);
@@ -14,7 +16,7 @@ function App() {
   useEffect(() => {
     const token = Cookies.get("token");
     setToken(token);
-  }, []);
+  }, [Cookies.get()]);
 
   useEffect(() => {
     if (tokenn) {
@@ -31,11 +33,21 @@ function App() {
     <>
       <>
         {tokenn ? <p>Token: {tokenn}</p> : <p>No token found</p>}
-        <Routes>
+        {/* <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/home" element={<Home />} />
           <Route path="/addTimes" element={<AddTimes token={tokenn} />} />
-        </Routes>
+          <Route
+            path="/viewAdminHours"
+            element={<ViewAdminHours token={tokenn} />}
+          />
+          <Route
+            path="/viewVolunteerDetail"
+            element={<ViewVolunteerDetail token={tokenn} />}
+          />
+        </Routes> */}
+        <ViewAdminHours token={tokenn}></ViewAdminHours>
+        <ViewVolunteerDetail token={tokenn}></ViewVolunteerDetail>
       </>
     </>
   );

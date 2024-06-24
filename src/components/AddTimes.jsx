@@ -19,7 +19,6 @@ const validationSchema = Yup.object({
 });
 function AddTimes({ token }) {
   const handleSubmit = (values, { resetForm }) => {
-    console.log(values.name, values.password);
     axios
       .post("/times/addtime", values, {
         withCredentials: true,
@@ -29,7 +28,7 @@ function AddTimes({ token }) {
         },
       })
       .then(() => {
-        resetForm({ values: initialValues });
+        resetForm();
       })
       .catch((error) => {
         console.log(error);

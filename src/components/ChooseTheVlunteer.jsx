@@ -19,7 +19,7 @@ function ChooseTheVlunteer({ token, formik }) {
   const [volunteers, setvolunteers] = useState([]);
   const [value, setValue] = useState(null);
   const [open, toggleOpen] = useState(false);
-
+  const [regetTheVOlunteer, setregetTheVOlunteer] = useState(false);
   const [dialogValue, setDialogValue] = useState({
     name: "",
     phone: "",
@@ -35,21 +35,41 @@ function ChooseTheVlunteer({ token, formik }) {
   });
 
   useEffect(() => {
-    axios
-      .get("/volunteer/getvolunteers", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((response) => {
-        let names = response.data.data.volunteers.map((obj) => obj.name);
-        setvolunteers(names.sort());
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+    if (token) {
+      axios
+        .get("/volunteer/getvolunteers", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => {
+          let names = response.data.data.volunteers.map((obj) => obj.name);
+          setvolunteers(names.sort());
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [regetTheVOlunteer]);
 
-  const handleSubmit = (event, newValue) => {
-    console.log(event);
+  const handleSubmit = (values, { resetForm }) => {
+    // event.preventDefault();
+
+    axios
+      .post("/volunteer/addvolunteer", values, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        console.log(res);
+        toggleOpen(false);
+        resetForm({ values: initialValues });
+        setregetTheVOlunteer(!regetTheVOlunteer);
+        setValue(res.data.data.name);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const handleClose = () => {
@@ -66,31 +86,29 @@ function ChooseTheVlunteer({ token, formik }) {
         >
           <Autocomplete
             onChange={(event, newValue) => {
-              console.log();
               if (volunteers.includes(newValue)) {
                 formik.setFieldValue("volunteer", newValue);
                 setValue(newValue);
               } else if (typeof newValue === "string") {
-                // timeout to avoid instant validation of the dialog's form.
                 setTimeout(() => {
                   toggleOpen(true);
                   setDialogValue({
-                    // title: newValue,
-                    // year: "",
+                    name: newValue.split('"')[1],
+                    phone: "",
                   });
                 });
               } else if (newValue && newValue.inputValue) {
                 toggleOpen(true);
                 setDialogValue({
-                  // title: newValue.inputValue,
-                  // year: "",
+                  name: newValue.inputValue,
+                  phone: "",
                 });
               }
             }}
             options={volunteers}
             sx={{ width: 300 }}
             freeSolo
-            disablePortal
+            // disablePortal
             value={value}
             clearOnEscape
             handleHomeEndKeys
@@ -105,7 +123,6 @@ function ChooseTheVlunteer({ token, formik }) {
               return filtered;
             }}
             clearOnBlur
-            // renderOption={(props, option) => <li {...props}>{option.title}</li>}
             renderInput={(params) => (
               <TextField {...params} label="choose the volunteer" />
             )}
@@ -118,7 +135,6 @@ function ChooseTheVlunteer({ token, formik }) {
               onSubmit={handleSubmit}
             >
               {(formm) => {
-                console.log(formm);
                 return (
                   <Form>
                     <DialogTitle>Add a new Volunteer</DialogTitle>
@@ -187,9 +203,6 @@ function ChooseTheVlunteer({ token, formik }) {
                 );
               }}
             </Formik>
-            {/* <form onSubmit={handleSubmit}>
-             
-            </form> */}
           </Dialog>
         </FormControl>
       </>
