@@ -13,17 +13,30 @@ import Button from "@mui/material/Button";
 import { DialogActions } from "@mui/material";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
+import { useRef } from "react";
 const filter = createFilterOptions();
 
-function ChooseTheVlunteer({ token, formik }) {
-  const [volunteers, setvolunteers] = useState([]);
+function ChooseTheVlunteer({
+  token,
+  formik,
+  regetTheVOlunteer,
+  setregetTheVOlunteer,
+  volunteers,
+}) {
   const [value, setValue] = useState(null);
   const [open, toggleOpen] = useState(false);
-  const [regetTheVOlunteer, setregetTheVOlunteer] = useState(false);
   const [dialogValue, setDialogValue] = useState({
     name: "",
     phone: "",
   });
+
+  useEffect(() => {
+    if (formik.values.volunteer == "") {
+      setValue("");
+    }
+  }, [formik.values.volunteer]);
+
+  const formikRef = useRef();
 
   const initialValues = {
     name: "",
@@ -34,25 +47,8 @@ function ChooseTheVlunteer({ token, formik }) {
     phone: Yup.string(),
   });
 
-  useEffect(() => {
-    if (token) {
-      axios
-        .get("/volunteer/getvolunteers", {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((response) => {
-          let names = response.data.data.volunteers.map((obj) => obj.name);
-          setvolunteers(names.sort());
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-  }, [regetTheVOlunteer]);
-
   const handleSubmit = (values, { resetForm }) => {
     // event.preventDefault();
-
     axios
       .post("/volunteer/addvolunteer", values, {
         headers: {
@@ -61,7 +57,6 @@ function ChooseTheVlunteer({ token, formik }) {
         },
       })
       .then((res) => {
-        console.log(res);
         toggleOpen(false);
         resetForm({ values: initialValues });
         setregetTheVOlunteer(!regetTheVOlunteer);
@@ -75,6 +70,12 @@ function ChooseTheVlunteer({ token, formik }) {
   const handleClose = () => {
     toggleOpen(false);
   };
+
+  useEffect(() => {
+    if (open && dialogValue.name !== "") {
+      navigator.clipboard.writeText(dialogValue.name);
+    }
+  }, [open]);
 
   return (
     <div>
@@ -93,22 +94,29 @@ function ChooseTheVlunteer({ token, formik }) {
                 setTimeout(() => {
                   toggleOpen(true);
                   setDialogValue({
+                    ...dialogValue,
                     name: newValue.split('"')[1],
-                    phone: "",
                   });
                 });
               } else if (newValue && newValue.inputValue) {
                 toggleOpen(true);
                 setDialogValue({
+                  ...dialogValue,
                   name: newValue.inputValue,
+                });
+              } else if (newValue == null) {
+                setDialogValue({
+                  name: "",
                   phone: "",
                 });
+                formik.setFieldValue("volunteer", "");
+                setValue(newValue);
               }
             }}
             options={volunteers}
             sx={{ width: 300 }}
             freeSolo
-            // disablePortal
+            disablePortal
             value={value}
             clearOnEscape
             handleHomeEndKeys
@@ -130,6 +138,7 @@ function ChooseTheVlunteer({ token, formik }) {
 
           <Dialog open={open} onClose={handleClose}>
             <Formik
+              innerRef={formikRef}
               initialValues={initialValues}
               validationSchema={validationSchema}
               onSubmit={handleSubmit}
@@ -149,14 +158,15 @@ function ChooseTheVlunteer({ token, formik }) {
                         margin="dense"
                         name="name"
                         id="name"
-                        value={dialogValue.name}
-                        onChange={(event) =>
-                          // setDialogValue({
-                          //   ...dialogValue,
-                          //   name: event.target.value,
-                          // })
-                          formm.setFieldValue("name", event.target.value)
-                        }
+                        value={formm.values.name}
+                        onChange={(event) => {
+                          // formm.handleChange(event);
+                          setDialogValue({
+                            ...dialogValue,
+                            name: event.target.value,
+                          });
+                          formm.setFieldValue("name", dialogValue.name);
+                        }}
                         sx={{
                           width: "100%",
                         }}
@@ -169,6 +179,7 @@ function ChooseTheVlunteer({ token, formik }) {
                         name="phone"
                         id="phone"
                         // value={dialogValue.phone}
+                        value={formm.values.phone}
                         sx={{
                           width: "100%",
                         }}

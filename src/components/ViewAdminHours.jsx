@@ -4,25 +4,28 @@ function ViewAdminHours({ token }) {
   const [times, setTiems] = useState([]);
 
   useEffect(() => {
-    axios
-      .get("/admin/getTimes", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        console.log(response);
-        setTiems(response.data.times);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
+    if (token) {
+      console.log("object");
+      axios
+        .get("/admin/getTimes", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {
+          console.log(response.data.data.Alltimes.timeid);
+          setTiems(response.data.data.Alltimes);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, [token]);
 
   return (
     <div>
       {times.map((time, index) => {
-        return <div key={index}>{time}</div>;
+        return <div key={index}>{time.timeid}</div>;
       })}
     </div>
   );

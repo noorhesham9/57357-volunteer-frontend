@@ -33,21 +33,28 @@ function App() {
     <>
       <>
         {tokenn ? <p>Token: {tokenn}</p> : <p>No token found</p>}
-        {/* <Routes>
+        <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/addTimes" element={<AddTimes token={tokenn} />} />
-          <Route
-            path="/viewAdminHours"
-            element={<ViewAdminHours token={tokenn} />}
-          />
-          <Route
-            path="/viewVolunteerDetail"
-            element={<ViewVolunteerDetail token={tokenn} />}
-          />
-        </Routes> */}
-        <ViewAdminHours token={tokenn}></ViewAdminHours>
-        <ViewVolunteerDetail token={tokenn}></ViewVolunteerDetail>
+          <Route path="/home/*" element={<Home token={tokenn} />} />
+          <Route path="*" element={<h1>404</h1>} />
+        </Routes>
+
+        <button
+          onClick={() => {
+            axios.get("/volunteer/getmonthlyvolunteers", {
+              headers: {
+                Authorization: `Bearer ${tokenn}`,
+              },
+              params: {
+                month: "7",
+                year: "2024",
+              },
+            });
+          }}
+          type="button"
+        >
+          getmonthlyvolunteers
+        </button>
       </>
     </>
   );
